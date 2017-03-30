@@ -14,6 +14,7 @@
 		51A32F371E8CA58100ADDC7F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 51A32F351E8CA58100ADDC7F /* LaunchScreen.storyboard */; };
 		51A32F3F1E8CA73700ADDC7F /* PhotosViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A32F3E1E8CA73700ADDC7F /* PhotosViewController.swift */; };
 		51A32F411E8CAC0800ADDC7F /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A32F401E8CAC0800ADDC7F /* PhotoCell.swift */; };
+		51A32F431E8CB1C000ADDC7F /* PhotoDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51A32F421E8CB1C000ADDC7F /* PhotoDetailsViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		51A32F381E8CA58100ADDC7F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		51A32F3E1E8CA73700ADDC7F /* PhotosViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotosViewController.swift; sourceTree = "<group>"; };
 		51A32F401E8CAC0800ADDC7F /* PhotoCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		51A32F421E8CB1C000ADDC7F /* PhotoDetailsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoDetailsViewController.swift; sourceTree = "<group>"; };
 		DDA42942FECAFDC8134E8511 /* Pods-Tumblr.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tumblr.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Tumblr/Pods-Tumblr.debug.xcconfig"; sourceTree = "<group>"; };
 		EA31F0E3EA35F81247B1EB75 /* Pods_Tumblr.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tumblr.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -75,6 +77,7 @@
 				51A32F2C1E8CA58100ADDC7F /* AppDelegate.swift */,
 				51A32F301E8CA58100ADDC7F /* Main.storyboard */,
 				51A32F401E8CAC0800ADDC7F /* PhotoCell.swift */,
+				51A32F421E8CB1C000ADDC7F /* PhotoDetailsViewController.swift */,
 				51A32F3E1E8CA73700ADDC7F /* PhotosViewController.swift */,
 				51A32F331E8CA58100ADDC7F /* Assets.xcassets */,
 				51A32F351E8CA58100ADDC7F /* LaunchScreen.storyboard */,
@@ -215,6 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				51A32F431E8CB1C000ADDC7F /* PhotoDetailsViewController.swift in Sources */,
 				51A32F2D1E8CA58100ADDC7F /* AppDelegate.swift in Sources */,
 				51A32F411E8CAC0800ADDC7F /* PhotoCell.swift in Sources */,
 				51A32F3F1E8CA73700ADDC7F /* PhotosViewController.swift in Sources */,

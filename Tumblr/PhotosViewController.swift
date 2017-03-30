@@ -17,11 +17,22 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
+        postsTableView.insertSubview(refreshControl, at: 0)
         postsTableView.delegate = self
         postsTableView.dataSource = self
         
         postsTableView.rowHeight = 240
         
+        getData(refreshControl: nil)
+    }
+    
+    func refreshControlAction(_ refreshControl: UIRefreshControl) {
+        getData(refreshControl: refreshControl)
+    }
+    
+    func getData(refreshControl: UIRefreshControl?) {
         let url = URL(string:"https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV")
         let request = URLRequest(url: url!)
         let session = URLSession(
@@ -45,6 +56,9 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
                         // This is where you will store the returned array of posts in your posts property
                         self.posts = responseFieldDictionary["posts"] as! [NSDictionary]
                         self.postsTableView.reloadData()
+                        
+                        refreshControl?.endRefreshing()
+                        
                     }
                 }
         })
@@ -77,15 +91,19 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
 
-    /*
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let vc = segue.destination as! PhotoDetailsViewController
+        //let indexPath = self.postsTableView.indexPath(for: sender as! UITableViewCell)
+        let cell = sender as! PhotoCell
+        vc.selectedPhoto = cell.cellImage.image
     }
-    */
 
 }
