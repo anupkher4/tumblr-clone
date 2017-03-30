@@ -9,21 +9,34 @@
 import UIKit
 import AFNetworking
 
-class PhotosViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class PhotosViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UIScrollViewDelegate {
     @IBOutlet weak var postsTableView: UITableView!
+    var loadingView: UIActivityIndicatorView!
 
     var posts: [NSDictionary] = []
+    
+    var isMoreDataLoading = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Pull to refresh
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshControlAction(_:)), for: UIControlEvents.valueChanged)
         postsTableView.insertSubview(refreshControl, at: 0)
+        
         postsTableView.delegate = self
         postsTableView.dataSource = self
         
         postsTableView.rowHeight = 240
+        
+        // Infinite scroll activity indicator
+        let tableFooterView: UIView = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+        loadingView = UIActivityIndicatorView(activityIndicatorStyle: .gray)
+        loadingView.startAnimating()
+        loadingView.center = tableFooterView.center
+        tableFooterView.addSubview(loadingView)
+        postsTableView.tableFooterView = tableFooterView
         
         getData(refreshControl: nil)
     }
@@ -55,10 +68,10 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
                         
                         // This is where you will store the returned array of posts in your posts property
                         self.posts = responseFieldDictionary["posts"] as! [NSDictionary]
-                        self.postsTableView.reloadData()
                         
                         refreshControl?.endRefreshing()
                         
+                        self.postsTableView.reloadData()
                     }
                 }
         })
@@ -69,6 +82,8 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    // MARK: - TableView Delegate Methods
     
     func numberOfSections(in tableView: UITableView) -> Int {
         return posts.count
@@ -90,7 +105,7 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         
         let post = posts[section]
         
-        let label = UILabel(frame: CGRect(x: 40, y: 10, width: headerView.frame.width, height: 30))
+        let label = UILabel(frame: CGRect(x: 40, y: 10, width: headerView.bounds.size.width, height: 30))
         
         if let timestamp = post.value(forKeyPath: "date") as? String {
             let dateFormatter = DateFormatter()
@@ -132,6 +147,49 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: false)
+    }
+    
+    // MARK: - ScrollView Delegate Methods
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if (!isMoreDataLoading) {
+            let scrollViewContentHeight = postsTableView.contentSize.height
+            let scrollOffsetThreshold = scrollViewContentHeight - postsTableView.bounds.size.height
+            
+            if (scrollView.contentOffset.y > scrollOffsetThreshold && postsTableView.isDragging) {
+                isMoreDataLoading = true
+                
+                loadMoreData()
+            }
+            
+        }
+    }
+    
+    func loadMoreData() {
+        let offset = self.posts.count
+        let url  = URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV&offset=\(offset)")
+        let myRequest = URLRequest(url: url!)
+        let session = URLSession(
+            configuration: .default,
+            delegate: nil,
+            delegateQueue: OperationQueue.main)
+        
+        let task: URLSessionDataTask = session.dataTask(with: myRequest, completionHandler: {
+            (data, response, error) in
+            if let data = data {
+                if let responseDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as? NSDictionary {
+                    let responseFieldDictionary = responseDictionary["response"] as! NSDictionary
+                    
+                    self.isMoreDataLoading = false
+                    self.loadingView.stopAnimating()
+                    let newPosts = responseFieldDictionary["posts"] as! [NSDictionary]
+                    self.posts += newPosts
+                    
+                    self.postsTableView.reloadData()
+                }
+            }
+        })
+        task.resume()
+        
     }
     
 
