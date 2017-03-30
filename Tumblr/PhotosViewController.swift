@@ -70,13 +70,52 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
         // Dispose of any resources that can be recreated.
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return posts.count
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerView = UIView(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+        headerView.backgroundColor = UIColor(white: 1.0, alpha: 0.9)
+        
+        let profileView = UIImageView(frame: CGRect(x: 10, y: 10, width: 30, height: 30))
+        profileView.clipsToBounds = true
+        profileView.layer.cornerRadius = 15
+        profileView.layer.borderColor = UIColor(white: 0.7, alpha: 0.8).cgColor
+        profileView.layer.borderWidth = 1
+        
+        profileView.setImageWith(URL(string: "https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/avatar")!)
+        
+        headerView.addSubview(profileView)
+        
+        let post = posts[section]
+        
+        let label = UILabel(frame: CGRect(x: 40, y: 10, width: headerView.frame.width, height: 30))
+        
+        if let timestamp = post.value(forKeyPath: "date") as? String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss zzz"
+            if let date = dateFormatter.date(from: timestamp) {
+                label.text = date.description
+            }
+        }
+        
+        headerView.addSubview(label)
+        
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell") as! PhotoCell
-        let post = posts[indexPath.row]
+        let post = posts[indexPath.section]
         if let photos = post.value(forKeyPath: "photos") as? [NSDictionary] {
             let imageUrlString = photos[0].value(forKeyPath: "original_size.url") as? String
             if let imageUrl = URL(string: imageUrlString!) {
@@ -101,8 +140,8 @@ class PhotosViewController: UIViewController, UITableViewDataSource, UITableView
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let vc = segue.destination as! PhotoDetailsViewController
-        //let indexPath = self.postsTableView.indexPath(for: sender as! UITableViewCell)
-        let cell = sender as! PhotoCell
+        let indexPath = self.postsTableView.indexPath(for: sender as! UITableViewCell)
+        let cell = postsTableView.cellForRow(at: indexPath!) as! PhotoCell
         vc.selectedPhoto = cell.cellImage.image
     }
 
