@@ -7,14 +7,20 @@
 //
 
 import UIKit
+import AFNetworking
 
-class PhotosViewController: UIViewController {
+class PhotosViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+    @IBOutlet weak var postsTableView: UITableView!
 
     var posts: [NSDictionary] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        postsTableView.delegate = self
+        postsTableView.dataSource = self
+        
+        postsTableView.rowHeight = 240
         
         let url = URL(string:"https://api.tumblr.com/v2/blog/humansofnewyork.tumblr.com/posts/photo?api_key=Q6vHoaVm5L1u2ZAW1fqv3Jw48gFzYVg9P0vH0VHl3GVy6quoGV")
         let request = URLRequest(url: url!)
@@ -38,15 +44,37 @@ class PhotosViewController: UIViewController {
                         
                         // This is where you will store the returned array of posts in your posts property
                         self.posts = responseFieldDictionary["posts"] as! [NSDictionary]
+                        self.postsTableView.reloadData()
                     }
                 }
-        });
+        })
         task.resume()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return posts.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "PhotoCell") as! PhotoCell
+        let post = posts[indexPath.row]
+        if let photos = post.value(forKeyPath: "photos") as? [NSDictionary] {
+            let imageUrlString = photos[0].value(forKeyPath: "original_size.url") as? String
+            if let imageUrl = URL(string: imageUrlString!) {
+                cell.cellImage.setImageWith(imageUrl)
+            } else {
+                
+            }
+        } else {
+            
+        }
+        
+        return cell
     }
     
 
