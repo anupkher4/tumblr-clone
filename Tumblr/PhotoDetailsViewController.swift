@@ -17,6 +17,7 @@ class PhotoDetailsViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        photoImageView.isUserInteractionEnabled = true
         photoImageView.image = selectedPhoto
     }
 
@@ -25,15 +26,19 @@ class PhotoDetailsViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-
-    /*
+    @IBAction func photoTapped(_ sender: UITapGestureRecognizer) {
+        performSegue(withIdentifier: "detailToFullScreen", sender: sender)
+    }
+    
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        let destinationVc = segue.destination as! FullScreenPhotoViewController
+        
+        destinationVc.fullScreenImage = self.photoImageView.image
     }
-    */
+    
 
 }
